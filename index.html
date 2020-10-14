@@ -1,0 +1,157 @@
+<html>
+
+    <head>
+    
+        <script src="three.js"></script>
+        <script src="OrbitControls.js"></script>
+        
+        
+        
+    </head>
+    
+    <body>
+    
+        <script>
+            
+            
+            //declaring vars
+        
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight, 0.1 , 1000);
+            var xVal =0.05 ;var yVal =0.01;var zVal =0.05;
+            var renderer = new THREE.WebGLRenderer(); //this is my renderer
+            renderer.setSize(window.innerWidth/2,window.innerHeight/2);//defining the window of the 3d components
+            document.body.appendChild(renderer.domElement);//fixes the element
+            
+            window.addEventListener('resize', function(){
+                var width = window.innerWidth/2;
+                var height = window.innerHeight/2;
+                renderer.setSize(width,height);
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+            }); //resizble element 
+            
+            
+            //construct the shape
+            var geometry = new THREE.BoxGeometry(1,1,1);
+            //making materials 
+            var cubematerials=[
+                new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('./img/FACE1.jpg'), side: THREE.DoubleSide} ),
+                new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('./img/FACE2.jpg'), side: THREE.DoubleSide} ),
+                new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('./img/FACE3.jpg'), side: THREE.DoubleSide} ),
+                new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('./img/FACE4.jpg'), side: THREE.DoubleSide} ),
+                new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('./img/FACE5.jpg'), side: THREE.DoubleSide} ),
+                new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('./img/FACE6.jpg'), side: THREE.DoubleSide} ),
+                
+            ];
+            
+            //material 
+            var material = new THREE.MeshFaceMaterial(cubematerials);
+            var cube = new THREE.Mesh(geometry,material);
+            scene.add(cube);
+            camera.position.z = 3;
+            
+            //changing index
+            function XValInput(val){
+                 xVal=document.getElementById('x-index').value=val;
+                 xVal /= 100;
+            } 
+            function YValInput(val){
+                 yVal = document.getElementById('y-index').value=val;
+                 yVal /= 100;
+            } 
+            function ZValInput(val){
+                 zVal = document.getElementById('z-index').value=val;
+                 zVal /= 100;
+            }
+            
+            //controls
+            
+            function MakeControls(){
+                controls = new THREE.OrbitControls(camera,renderer.domElement);
+            }
+            
+            
+            
+            
+            
+            //game logic
+            var rotation=function(x,y,z){
+
+                
+                    cube.rotation.x += xVal;
+                    cube.rotation.y += yVal;
+                    cube.rotation.z += zVal;
+                
+            };
+            
+            var render=function(){
+                renderer.render(scene,camera)
+            };
+            
+            
+            //game runner
+            var GameLoop=function(run,mode){
+                if (run)
+                    requestAnimationFrame(GameLoop);
+                rotation();
+                render();
+                
+                
+            };
+            
+            var selected = false;
+            function Input(){
+                
+                if ((document.getElementById("action").value == 'Rotazione') || (document.getElementById("action").value == 'rotazione')){
+                    GameLoop(true,0);
+                    selected = true;
+                } 
+                if ((document.getElementById("action").value == 'Stop') || (document.getElementById("action").value == 'stop')){
+                   location.reload();
+                }
+                if ((document.getElementById("action").value == 'Muovi') || (document.getElementById("action").value == 'muovi')){
+                   if (selected)
+                        MakeControls();
+                    else
+                        GameLoop(true,1);
+                        MakeControls();
+                }
+                
+            }
+            
+
+            
+            GameLoop(false);
+            
+            
+            
+        
+        </script>
+        
+        
+        <h2>Mosse consentite</h2>
+        
+        <ul>
+        
+            <li>Rotazione</li>
+            <li>Stop</li>
+            <li>Muovi</li>
+            
+        </ul>
+        
+
+        <input  id="action" type="text" placeholder="Inserisci qui l'azione"/>
+        <button  class="form" onclick="Input()" >invio</button>
+        <br>
+        <h5>Usa i banner per regolare la velocita':</h5>
+        X-INDEX <input type="range" id="x-index" min=0 max=5 onchange="XValInput(this.value);"/>
+        <br>
+        Y-INDEX <input type="range" id="y-index" min=0 max=5 onchange="YValInput(this.value);"/>
+        <br>
+        Z-INDEX <input type="range" id="z-index" min=0 max=5 onchange="ZValInput(this.value);"/>
+        
+        
+        
+    </body>
+</html>
